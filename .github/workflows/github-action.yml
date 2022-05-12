@@ -29,26 +29,41 @@ jobs:
         run: |
           python -m pip install --upgrade "pip<20"
           pip install -r requirements.txt
+
       - name: Check stories are consistent
         run: |
           rasa data validate stories --max-history 5 --fail-on-warning
+
       - name: Train model
         run: |
+          rm -rf $MODEL_DIRECTORY/*
           rasa train
+  
       - name: Run Through Test Stories
         run: |
-          rasa test
+          rasa test core --stories test_stories/stories.yml --fail-on-prediction-errors
+
+      - name: Upload model
+        if: github.event_name == 'push' && (startsWith(github.event.ref, 'refs/tags') || github.ref == 'refs/heads/master')
+        uses: actions/upload-artifact@v2
+        with:
+          name: model
+          path: models
+
       - name: Get path to model
         run: |
           ls -R $MODEL_DIRECTORY
+
       - name: Upload Model to Rasa
         run: |
           MODELNAME=$(ls $MODEL_DIRECTORY)
+
           # Get token
           RASA_X_TOKEN=$(curl -s --header "Content-Type: application/json" \
             --request POST \
             --data "{\"username\":\"${RASA_X_USERNAME}\",\"password\":\"${RASA_X_PASSWORD}\"}" \
             http://${{ env.DOMAIN }}/api/auth | jq -r .access_token)
+
           # Upload model
           cd $MODEL_DIRECTORY
           curl -k --fail -H "Authorization: Bearer ${RASA_X_TOKEN}" -F "model=@${MODELNAME}" http://${{ env.DOMAIN }}/api/projects/default/models
