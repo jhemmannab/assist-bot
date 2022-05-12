@@ -40,14 +40,13 @@ jobs:
           rasa test core --stories test/stories.yml --fail-on-prediction-errors
       - name: Get path to model
         run: |
-          ls -R
-          MODELNAME=${{ env.MODEL_DIRECTORY }}/$(ls ${{ env.MODEL_DIRECTORY }})" >> $GITHUB_ENV
-      - name: Upload Model to Rasa
-        run: |
-          # Get token
-          RASA_X_TOKEN=$(curl -s --header "Content-Type: application/json" \
-            --request POST \
-            --data "{\"username\":\"${RASA_X_USERNAME}\",\"password\":\"${RASA_X_PASSWORD}\"}" \
-            https://${{ env.DOMAIN }}/api/auth | jq -r .access_token)
-          # Upload model
-          curl -k --fail -H "Authorization: Bearer ${RASA_X_TOKEN}" -F "model=@${MODELNAME}" https://${{ env.DOMAIN }}/api/projects/default/models
+          ls -R ${{ MODEL_DIRECTORY }}
+      # - name: Upload Model to Rasa
+      #   run: |
+      #     # Get token
+      #     RASA_X_TOKEN=$(curl -s --header "Content-Type: application/json" \
+      #       --request POST \
+      #       --data "{\"username\":\"${RASA_X_USERNAME}\",\"password\":\"${RASA_X_PASSWORD}\"}" \
+      #       https://${{ env.DOMAIN }}/api/auth | jq -r .access_token)
+      #     # Upload model
+      #     curl -k --fail -H "Authorization: Bearer ${RASA_X_TOKEN}" -F "model=@${MODELNAME}" https://${{ env.DOMAIN }}/api/projects/default/models
