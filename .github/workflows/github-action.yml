@@ -10,6 +10,7 @@ env:
   DOMAIN: "a3eb2ad99b5ae4c418e21ba905b1475d-794172728.us-east-1.elb.amazonaws.com:8000"
   RASA_X_USERNAME: admin
   RASA_X_PASSWORD: ${{ secrets.RASA_X_ADMIN_PASSWORD }}
+  MODEL_DIRECTORY: "models"
 
 jobs:
   build-model:
@@ -37,17 +38,6 @@ jobs:
       - name: Run Through Test Stories
         run: |
           rasa test core --stories test_stories/stories.yml --fail-on-prediction-errors
-
-  upload-model:
-    name: Upload the trained model to Rasa X
-
-    env:
-      MODEL_DIRECTORY: "models"
-
-    if: github.event_name == 'push' && (startsWith(github.event.ref, 'refs/tags') || github.ref == 'refs/heads/master')
-    runs-on: ubuntu-latest
-
-    steps:
       - name: Get path to model
         run: |
           ls -R
