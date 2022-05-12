@@ -8,7 +8,7 @@ on:
 
 env:
   DOMAIN: "a3eb2ad99b5ae4c418e21ba905b1475d-794172728.us-east-1.elb.amazonaws.com:8000"
-  RASA_X_USERNAME: admin
+  RASA_X_USERNAME: rasa
   RASA_X_PASSWORD: ${{ secrets.RASA_X_ADMIN_PASSWORD }}
   MODEL_DIRECTORY: "models"
 
@@ -44,10 +44,6 @@ jobs:
       - name: Upload Model to Rasa
         run: |
           MODELNAME=$(ls $MODEL_DIRECTORY)
-          echo "curl -s --header "Content-Type: application/json" \
-            --request POST \
-            --data "{\"username\":\"${RASA_X_USERNAME}\",\"password\":\"${RASA_X_PASSWORD}\"}" \
-            https://${{ env.DOMAIN }}/api/auth | jq -r .access_token"
           # Get token
           RASA_X_TOKEN=$(curl -s --header "Content-Type: application/json" \
             --request POST \
