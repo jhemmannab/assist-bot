@@ -37,7 +37,7 @@ jobs:
           rasa train
       - name: Run Through Test Stories
         run: |
-          rasa test core --stories test/stories.yml --fail-on-prediction-errors
+          rasa test
       - name: Get path to model
         run: |
           ls -R $MODEL_DIRECTORY
