@@ -1,0 +1,73 @@
+name: Model CI
+on:
+  push:
+    branches:
+      - "master"
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+env:
+  DOMAIN: "a3eb2ad99b5ae4c418e21ba905b1475d-794172728.us-east-1.elb.amazonaws.com:8000"
+  RASA_X_USERNAME: admin
+  RASA_X_PASSWORD: ${{ secrets.RASA_X_ADMIN_PASSWORD }}
+
+jobs:
+  build-model:
+    name: Build, test, and upload model
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade "pip<20"
+          pip install -r requirements.txt
+      - name: Check stories are consistent
+        run: |
+          rasa data validate stories --max-history 5 --fail-on-warning
+      - name: Train model
+        run: |
+          rasa train
+      - name: Run Through Test Stories
+        run: |
+          rasa test core --stories test_stories/stories.yml --fail-on-prediction-errors
+
+  # upload-model:
+  #   name: Upload the trained model to Rasa X
+
+  #   env:
+  #     MODEL_DIRECTORY: "models"
+
+  #   if: github.event_name == 'push' && (startsWith(github.event.ref, 'refs/tags') || github.ref == 'refs/heads/master')
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Download Model
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: model
+  #         path: ${{ env.MODEL_DIRECTORY }}
+
+  #     - name: Get path to model
+  #       run: |
+  #         ls -R
+  #         echo "MODELNAME=${{ env.MODEL_DIRECTORY }}/$(ls ${{ env.MODEL_DIRECTORY }})" >> $GITHUB_ENV
+  #     - name: Upload Model to Rasa
+  #       run: |
+  #         # Get token
+  #         RASA_X_TOKEN=$(curl -s --header "Content-Type: application/json" \
+  #           --request POST \
+  #           --data "{\"username\":\"${RASA_X_USERNAME}\",\"password\":\"${RASA_X_PASSWORD}\"}" \
+  #           https://${{ env.DOMAIN }}/api/auth | jq -r .access_token)
+  #         # Upload model
+  #         curl -k --fail -H "Authorization: Bearer ${RASA_X_TOKEN}" -F "model=@${MODELNAME}" https://${{ env.DOMAIN }}/api/projects/default/models
+  #         # ensure model is ready and tag as production
+  #         sleep 5
+  #         export MODEL=$(basename ${MODELNAME} .tar.gz)
+  #         curl --fail -XPUT -H "Authorization: Bearer ${RASA_X_TOKEN}" https://${{ env.DOMAIN }}/api/projects/default/models/${MODEL}/tags/production
