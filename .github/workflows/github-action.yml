@@ -37,10 +37,12 @@ jobs:
           rasa train
       - name: Run Through Test Stories
         run: |
-          rasa test core --stories test_stories/stories.yml --fail-on-prediction-errors
+          rasa test core --stories test/stories.yml --fail-on-prediction-errors
       - name: Get path to model
         run: |
           ls -R
+          echo "Model path: $(pwd)/${{ env.MODEL_DIRECTORY }}"
+          echo $GITHUB_ENV
           echo "MODELNAME=${{ env.MODEL_DIRECTORY }}/$(ls ${{ env.MODEL_DIRECTORY }})" >> $GITHUB_ENV
       - name: Upload Model to Rasa
         run: |
