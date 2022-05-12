@@ -40,7 +40,7 @@ jobs:
           rasa test core --stories test/stories.yml --fail-on-prediction-errors
       - name: Get path to model
         run: |
-          ls -R ${{ MODEL_DIRECTORY }}
+          ls -R $MODEL_DIRECTORY
       # - name: Upload Model to Rasa
       #   run: |
       #     # Get token
