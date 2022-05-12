@@ -48,7 +48,7 @@ jobs:
           RASA_X_TOKEN=$(curl -s --header "Content-Type: application/json" \
             --request POST \
             --data "{\"username\":\"${RASA_X_USERNAME}\",\"password\":\"${RASA_X_PASSWORD}\"}" \
-            https://${{ env.DOMAIN }}/api/auth | jq -r .access_token)
+            http://${{ env.DOMAIN }}/api/auth | jq -r .access_token)
           # Upload model
           cd $MODEL_DIRECTORY
-          curl -k --fail -H "Authorization: Bearer ${RASA_X_TOKEN}" -F "model=@${MODELNAME}" https://${{ env.DOMAIN }}/api/projects/default/models
+          curl -k --fail -H "Authorization: Bearer ${RASA_X_TOKEN}" -F "model=@${MODELNAME}" http://${{ env.DOMAIN }}/api/projects/default/models
