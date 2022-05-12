@@ -43,11 +43,16 @@ jobs:
           ls -R $MODEL_DIRECTORY
       - name: Upload Model to Rasa
         run: |
+          MODELNAME=$(ls $MODEL_DIRECTORY)
+          echo "curl -s --header "Content-Type: application/json" \
+            --request POST \
+            --data "{\"username\":\"${RASA_X_USERNAME}\",\"password\":\"${RASA_X_PASSWORD}\"}" \
+            https://${{ env.DOMAIN }}/api/auth | jq -r .access_token"
           # Get token
-          echo "MODELNAME=$(ls $MODEL_DIRECTORY)"
           RASA_X_TOKEN=$(curl -s --header "Content-Type: application/json" \
             --request POST \
             --data "{\"username\":\"${RASA_X_USERNAME}\",\"password\":\"${RASA_X_PASSWORD}\"}" \
             https://${{ env.DOMAIN }}/api/auth | jq -r .access_token)
           # Upload model
+          cd $MODEL_DIRECTORY
           curl -k --fail -H "Authorization: Bearer ${RASA_X_TOKEN}" -F "model=@${MODELNAME}" https://${{ env.DOMAIN }}/api/projects/default/models
