@@ -48,12 +48,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download Model
-        uses: actions/download-artifact@v2
-        with:
-          name: model
-          path: ${{ env.MODEL_DIRECTORY }}
-
       - name: Get path to model
         run: |
           ls -R
