@@ -41,9 +41,7 @@ jobs:
       - name: Get path to model
         run: |
           ls -R
-          echo "Model path: $(pwd)/${{ env.MODEL_DIRECTORY }}"
-          echo $GITHUB_ENV
-          echo "MODELNAME=${{ env.MODEL_DIRECTORY }}/$(ls ${{ env.MODEL_DIRECTORY }})" >> $GITHUB_ENV
+          MODELNAME=${{ env.MODEL_DIRECTORY }}/$(ls ${{ env.MODEL_DIRECTORY }})" >> $GITHUB_ENV
       - name: Upload Model to Rasa
         run: |
           # Get token
