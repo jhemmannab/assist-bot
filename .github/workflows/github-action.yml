@@ -7,7 +7,7 @@ on:
     types: [opened, synchronize, reopened]
 
 env:
-  DOMAIN: "a3eb2ad99b5ae4c418e21ba905b1475d-794172728.us-east-1.elb.amazonaws.com:8000"
+  DOMAIN: "a0622269df94e45359d26d448615e464-506509421.us-east-1.elb.amazonaws.com:8000"
   RASA_X_USERNAME: rasa
   RASA_X_PASSWORD: ${{ secrets.RASA_X_ADMIN_PASSWORD }}
   MODEL_DIRECTORY: "models"
