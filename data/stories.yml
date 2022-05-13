@@ -1,7 +1,6 @@
 version: "3.1"
 
 stories:
-
   - story: Help path
     steps:
       - intent: greet
@@ -10,3 +9,5 @@ stories:
       - intent: user_help
       - action: action_help_message
       - action: action_show_response
+      - intent: goodbye
+      - action: utter_goodbye

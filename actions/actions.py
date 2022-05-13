@@ -65,5 +65,5 @@ class ActionSearch(Action):
 
         for link in linkArr:
             dispatcher.utter_message(
-                text=f"Here is the top search result : {link}")
+                text=f"Here is the top search result : [link]({link})")
         return []
